@@ -1,11 +1,11 @@
 import Books from "./books/Books"
-import TeacherDashboardLayout from "./layout/TeacherDashboardLayout"
+import DashboardLayout from "./layout/DashboardLayout"
 
-const TeacherDashboard = () => {
+const TeacherDashboard = ({ user }) => {
   return (
-    <TeacherDashboardLayout>
-      <Books />
-    </TeacherDashboardLayout>
+    <DashboardLayout user={user}>
+      <Books user={user} />
+    </DashboardLayout>
   )
 }
 

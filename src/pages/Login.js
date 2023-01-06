@@ -22,11 +22,12 @@ const Login = () => {
   const handleOnSubmit = async (e) => {
     e.preventDefault()
 
-    const { status, message } = await loginUser(form)
+    const { status, message, user } = await loginUser(form)
 
     if (status === "success") {
       toast[status](message)
-      navigate("/")
+      sessionStorage.setItem("user", JSON.stringify(user))
+      navigate("/books")
     } else {
       toast[status](message)
     }
@@ -52,7 +53,7 @@ const Login = () => {
     <DefaultLayout>
       <Container>
         <Row className="mt-5">
-          <Col className="bg-primary p-5">
+          <Col className="bg-warning p-5">
             <div className="bg-light p-4 rounded">
               <Form onSubmit={handleOnSubmit}>
                 <h2 className="text-center">Login</h2>
@@ -63,7 +64,7 @@ const Login = () => {
                 ))}
 
                 <p className="d-grid">
-                  <Button variant="primary" type="submit">
+                  <Button variant="warning" type="submit">
                     Login
                   </Button>
                 </p>
