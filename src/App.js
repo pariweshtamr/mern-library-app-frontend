@@ -3,10 +3,12 @@ import { ToastContainer } from "react-toastify"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
-import Dashboard from "./pages/Dashboard"
 import AddBook from "./pages/AddBook"
 import { useEffect, useState } from "react"
 import MyBooks from "./pages/MyBooks"
+import Transactions from "./pages/Transactions"
+import Books from "./pages/Books"
+import Profile from "./pages/Profile"
 
 function App() {
   const [user, setUser] = useState({})
@@ -28,7 +30,7 @@ function App() {
             <Route path="register" element={<Register />} />
 
             <Route path="books">
-              <Route index element={<Dashboard />} />
+              <Route index element={<Books />} />
               <Route
                 path="add"
                 element={user?._id && <AddBook user={user} />}
@@ -40,6 +42,9 @@ function App() {
               path="mybooks"
               element={<MyBooks user={user} />}
             ></Route>
+
+            <Route path="transactions" element={<Transactions />} />
+            <Route path="profile" element={<Profile currentUser={user} />} />
           </Route>
         </Routes>
       </BrowserRouter>

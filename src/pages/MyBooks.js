@@ -4,12 +4,11 @@ import { toast } from "react-toastify"
 import DashboardLayout from "../components/layout/DashboardLayout"
 import { getBooksBorrowed, returnBook } from "../helpers/axiosHelper"
 
-const MyBooks = ({ user }) => {
+const MyBooks = () => {
   const [myBooks, setMyBooks] = useState([])
 
   const fetchBooksBorrowed = async () => {
-    const res = await getBooksBorrowed(user._id)
-    console.log(res)
+    const res = await getBooksBorrowed()
     setMyBooks(res.books)
   }
   useEffect(() => {
@@ -18,8 +17,8 @@ const MyBooks = ({ user }) => {
 
   const handleReturn = async (bookId) => {
     if (window.confirm("Are you sure you want to return this book?")) {
-      if (bookId && user._id) {
-        await returnBook(bookId, user._id)
+      if (bookId) {
+        await returnBook(bookId)
           .then((response) =>
             response?.status
               ? toast.success(response.message) && fetchBooksBorrowed()
@@ -33,10 +32,11 @@ const MyBooks = ({ user }) => {
     <DashboardLayout>
       <Container>
         <Row className="p-5">
-          <Table striped bordered hover>
+          <Table striped bordered hover style={{ width: "100%" }}>
             <thead>
               <tr className="text-center">
                 <th>#</th>
+                <th>Book</th>
                 <th>Title</th>
                 <th>Author</th>
                 <th>Action</th>
@@ -46,6 +46,13 @@ const MyBooks = ({ user }) => {
               {myBooks?.map((book, i) => (
                 <tr key={book._id} className="text-center">
                   <td>{i + 1}</td>
+                  <td style={{ width: "15%" }}>
+                    <img
+                      src={book.thumbnail}
+                      alt="book-img"
+                      style={{ width: "30%" }}
+                    />
+                  </td>
                   <td>{book.title}</td>
                   <td>{book.author}</td>
                   <td>

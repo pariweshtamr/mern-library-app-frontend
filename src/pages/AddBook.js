@@ -56,6 +56,16 @@ const AddBook = () => {
                 />
               </Form.Group>
               <Form.Group className="mb-2">
+                <Form.Label>ISBN</Form.Label>
+                <Form.Control
+                  placeholder="ISBN"
+                  required
+                  type="text"
+                  name="isbn"
+                  onChange={handleOnChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-2">
                 <Form.Label>Quantity</Form.Label>
                 <Form.Control
                   placeholder="Quantity"
@@ -75,8 +85,18 @@ const AddBook = () => {
                   onChange={handleOnChange}
                 />
               </Form.Group>
+              <Form.Group className="mb-2">
+                <Form.Label>Thumbnail</Form.Label>
+                <Form.Control
+                  placeholder="Image"
+                  required
+                  type="text"
+                  name="thumbnail"
+                  onChange={handleOnChange}
+                />
+              </Form.Group>
 
-              <Button type="submit" className="mt-4">
+              <Button variant="warning" type="submit" className="mt-4">
                 ADD BOOK{" "}
                 <span>
                   {loading && <Spinner animation="border" variant="warning" />}

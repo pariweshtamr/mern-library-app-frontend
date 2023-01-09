@@ -6,8 +6,27 @@ const baseApiUrl =
 
 const userEp = baseApiUrl + "/user"
 const bookEp = baseApiUrl + "/book"
+const transactionEp = baseApiUrl + "/transaction"
 
 // USER
+
+// get user from sessionStorage
+
+export const getUser = () => {
+  const user = JSON.parse(sessionStorage.getItem("user"))
+
+  if (user) {
+    return user
+  }
+}
+
+const getUserFromSessionStorage = () => {
+  const user = JSON.parse(sessionStorage.getItem("user"))
+  if (user) {
+    return user?._id
+  }
+  return
+}
 
 export const postNewUser = async (userData) => {
   try {
@@ -33,41 +52,20 @@ export const loginUser = async (userData) => {
   }
 }
 
-export const borrowBook = async (bookId, userId) => {
+export const editUserInfo = async (userData) => {
   try {
-    const { data } = await axios.post(userEp + "/borrow", { bookId, userId })
-    return data
-  } catch (error) {
-    return {
-      status: "error",
-      message: error.message,
-    }
-  }
-}
-
-export const returnBook = async (bookId, userId) => {
-  try {
-    const { data } = await axios.patch(userEp + "/return", { bookId, userId })
-    return data
-  } catch (error) {
-    return {
-      status: "error",
-      message: error.message,
-    }
-  }
-}
-
-export const getBooksBorrowed = async (userId) => {
-  try {
-    const { data } = await axios.get(
-      userEp + "/borrowed-books",
-
-      {
-        headers: {
-          authorization: userId,
-        },
+    const userId = getUserFromSessionStorage()
+    if (!userId) {
+      return {
+        status: "error",
+        message: "Please login first",
       }
-    )
+    }
+    const { data } = await axios.patch(userEp, userData, {
+      headers: {
+        Authorization: userId,
+      },
+    })
     return data
   } catch (error) {
     return {
@@ -81,7 +79,18 @@ export const getBooksBorrowed = async (userId) => {
 
 export const addBook = async (bookInfo) => {
   try {
-    const { data } = await axios.post(bookEp, bookInfo)
+    const userId = getUserFromSessionStorage()
+    if (!userId) {
+      return {
+        status: "error",
+        message: "Please login first!",
+      }
+    }
+    const { data } = await axios.post(bookEp, bookInfo, {
+      headers: {
+        Authorization: userId,
+      },
+    })
     return data
   } catch (error) {
     return {
@@ -93,7 +102,143 @@ export const addBook = async (bookInfo) => {
 
 export const getBooks = async () => {
   try {
-    const { data } = await axios.get(bookEp)
+    const userId = getUserFromSessionStorage()
+    if (!userId) {
+      return {
+        status: "error",
+        message: "Please log in first!",
+      }
+    }
+    const { data } = await axios.get(bookEp, {
+      headers: {
+        Authorization: userId,
+      },
+    })
+    return data
+  } catch (error) {
+    return {
+      status: "error",
+      message: error.message,
+    }
+  }
+}
+
+export const borrowBook = async (bookId) => {
+  try {
+    const userId = getUserFromSessionStorage()
+
+    if (!userId) {
+      return {
+        status: "error",
+        message: "Please login first!",
+      }
+    }
+    const { data } = await axios.post(
+      bookEp + "/borrow",
+      { bookId },
+      {
+        headers: { Authorization: userId },
+      }
+    )
+    return data
+  } catch (error) {
+    return {
+      status: "error",
+      message: error.message,
+    }
+  }
+}
+
+export const returnBook = async (bookId) => {
+  try {
+    const userId = getUserFromSessionStorage()
+    if (!userId) {
+      return {
+        status: "error",
+        message: "Please login first!",
+      }
+    }
+    const { data } = await axios.patch(
+      bookEp + "/return",
+      {
+        bookId,
+      },
+      {
+        headers: { Authorization: userId },
+      }
+    )
+    return data
+  } catch (error) {
+    return {
+      status: "error",
+      message: error.message,
+    }
+  }
+}
+
+export const getBooksBorrowed = async () => {
+  try {
+    const userId = getUserFromSessionStorage()
+    if (!userId) {
+      return {
+        status: "error",
+        message: "Please log in first!",
+      }
+    }
+    const { data } = await axios.get(bookEp + "/borrowedByUser", {
+      headers: {
+        Authorization: userId,
+      },
+    })
+    return data
+  } catch (error) {
+    return {
+      status: "error",
+      message: error.message,
+    }
+  }
+}
+
+export const getAllBorrowedBooks = async () => {
+  try {
+    const userId = getUserFromSessionStorage()
+    if (!userId) {
+      return {
+        status: "error",
+        message: "Please log in first!",
+      }
+    }
+
+    const { data } = await axios.get(bookEp + "/allBorrowedBooks", {
+      headers: {
+        Authorization: userId,
+      },
+    })
+    return data
+  } catch (error) {
+    return {
+      status: "error",
+      message: error.message,
+    }
+  }
+}
+
+export const deleteABook = async (_id) => {
+  try {
+    const userId = getUserFromSessionStorage()
+
+    if (!userId) {
+      return {
+        status: "error",
+        message: "Please login first!",
+      }
+    }
+    const { data } = await axios.delete(bookEp + "/delete", {
+      data: { _id },
+      headers: {
+        Authorization: userId,
+      },
+    })
     return data
   } catch (error) {
     return {
@@ -105,8 +250,18 @@ export const getBooks = async () => {
 
 export const deleteBooks = async (ids) => {
   try {
+    const userId = getUserFromSessionStorage()
+    if (!userId) {
+      return {
+        status: "error",
+        message: "Please log in first!",
+      }
+    }
     const { data } = await axios.delete(bookEp, {
       data: ids,
+      headers: {
+        Authorization: userId,
+      },
     })
     return data
   } catch (error) {
@@ -117,4 +272,28 @@ export const deleteBooks = async (ids) => {
   }
 }
 
-// RANSACTION
+// TRANSACTIONS
+
+export const getAllTransactions = async () => {
+  try {
+    const userId = getUserFromSessionStorage()
+    if (!userId) {
+      return {
+        status: "error",
+        message: "Please login first!",
+      }
+    }
+    const { data } = await axios.get(transactionEp, {
+      headers: {
+        Authorization: userId,
+      },
+    })
+
+    return data
+  } catch (error) {
+    return {
+      status: "error",
+      message: error.message,
+    }
+  }
+}

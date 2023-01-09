@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 
 const Sidebar = ({ user }) => {
   return (
@@ -14,42 +14,43 @@ const Sidebar = ({ user }) => {
       <div className="bottom">
         <ul>
           <p className="title">MAIN</p>
-          <Link to="/books">
+          <NavLink to="/books">
             <li>
               <i className="fa-solid fa-book"></i> <span>All Books</span>
             </li>
-          </Link>
-          {user?.role === "teacher" && (
-            <>
-              <Link to="/books/add">
-                <li>
-                  <i className="fa-solid fa-book"></i>
-                  <span>Add Book</span>
-                </li>
-              </Link>
+          </NavLink>
 
-              <Link to="/transactions">
-                <li>
-                  <i className="fa-solid fa-book-open-reader"></i>{" "}
-                  <span>Transactions</span>
-                </li>
-              </Link>
-            </>
-          )}
-
-          <Link to="/mybooks">
+          <NavLink to="/mybooks">
             <li>
               <i className="fa-solid fa-book-open-reader"></i>{" "}
               <span>My Books</span>
             </li>
-          </Link>
+          </NavLink>
+
+          {user?.role === "teacher" && (
+            <>
+              <NavLink to="/books/add">
+                <li>
+                  <i className="fa-solid fa-book"></i>
+                  <span>Add Book</span>
+                </li>
+              </NavLink>
+
+              <NavLink to="/transactions">
+                <li>
+                  <i className="fa-solid fa-book-open-reader"></i>{" "}
+                  <span>Transactions</span>
+                </li>
+              </NavLink>
+            </>
+          )}
 
           <p className="title">USER</p>
-          <Link to="/profile">
+          <NavLink to="/profile">
             <li>
               <i className="fa-solid fa-user"></i> <span>Profile</span>
             </li>
-          </Link>
+          </NavLink>
         </ul>
       </div>
     </aside>

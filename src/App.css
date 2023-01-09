@@ -3,6 +3,12 @@
   margin: 2rem 0;
 }
 
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 .reg-info {
   background: url("./assets/reg-bg.jpg") no-repeat center center;
   background-size: cover;
@@ -152,4 +158,13 @@
 
 .add-bottom label {
   font-weight: 500;
+}
+
+/* Books list */
+.books-list {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
