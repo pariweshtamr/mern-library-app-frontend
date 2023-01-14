@@ -5,9 +5,12 @@ import InputField from "../components/inputField/InputField"
 import { useState } from "react"
 import { loginUser } from "../helpers/axiosHelper"
 import { toast } from "react-toastify"
+import { useDispatch } from "react-redux"
+import { loginAction } from "../redux/User/UserAction"
 
 const Login = () => {
   const [form, setForm] = useState({})
+  const dispatch = useDispatch()
   const navigate = useNavigate()
 
   const handleOnChange = (e) => {
@@ -21,16 +24,16 @@ const Login = () => {
 
   const handleOnSubmit = async (e) => {
     e.preventDefault()
+    dispatch(loginAction(form)) && navigate("/")
+    // const { status, message, user } = await loginUser(form)
 
-    const { status, message, user } = await loginUser(form)
-
-    if (status === "success") {
-      toast[status](message)
-      sessionStorage.setItem("user", JSON.stringify(user))
-      navigate("/books")
-    } else {
-      toast[status](message)
-    }
+    // if (status === "success") {
+    //   toast[status](message)
+    //   sessionStorage.setItem("user", JSON.stringify(user))
+    //   navigate("/books")
+    // } else {
+    //   toast[status](message)
+    // }
   }
 
   const inputs = [
