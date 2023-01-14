@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap"
 import { toast } from "react-toastify"
 import DashboardLayout from "../components/layout/DashboardLayout"
-import { editUserInfo, getUser } from "../helpers/axiosHelper"
+import { editUserInfo } from "../helpers/axiosHelper"
 
 const Profile = ({ currentUser }) => {
   const [showEditProfile, setShowEditProfile] = useState(false)

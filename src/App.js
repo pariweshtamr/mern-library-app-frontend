@@ -31,10 +31,7 @@ function App() {
 
             <Route path="books">
               <Route index element={<Books />} />
-              <Route
-                path="add"
-                element={user?._id && <AddBook user={user} />}
-              ></Route>
+              <Route path="add" element={<AddBook user={user} />}></Route>
             </Route>
 
             <Route
