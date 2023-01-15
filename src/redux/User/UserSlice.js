@@ -4,7 +4,9 @@ const initialState = {
   isLoading: false,
   isLoggedIn: false,
   error: {},
-  userInfo: {},
+  userInfo: sessionStorage.getItem("user")
+    ? JSON.parse(sessionStorage.getItem("user"))
+    : {},
 }
 
 const userSlice = createSlice({

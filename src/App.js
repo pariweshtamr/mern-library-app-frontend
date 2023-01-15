@@ -34,17 +34,27 @@ function App() {
             <Route path="register" element={<Register />} />
 
             <Route path="books">
-              <Route path="add" element={<AddBook />}></Route>
+              <Route index element={<Books />} />
+              <Route
+                path="add"
+                element={isLoggedIn ? <AddBook /> : <Login />}
+              ></Route>
             </Route>
 
             <Route
               exact
               path="mybooks"
-              element={<MyBooks user={user} />}
+              element={isLoggedIn ? <MyBooks user={user} /> : <Login />}
             ></Route>
 
-            <Route path="transactions" element={<Transactions />} />
-            <Route path="profile" element={<Profile currentUser={user} />} />
+            <Route
+              path="transactions"
+              element={isLoggedIn ? <Transactions /> : <Login />}
+            />
+            <Route
+              path="profile"
+              element={isLoggedIn ? <Profile currentUser={user} /> : <Login />}
+            />
           </Route>
         </Routes>
       </BrowserRouter>
