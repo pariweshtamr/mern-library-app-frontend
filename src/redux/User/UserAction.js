@@ -1,6 +1,12 @@
 import { toast } from "react-toastify"
 import { loginUser } from "../../helpers/axiosHelper"
-import { loginSuccess, requestFail, requestPending } from "./UserSlice"
+import {
+  loginAuto,
+  loginSuccess,
+  logoutSuccess,
+  requestFail,
+  requestPending,
+} from "./UserSlice"
 
 export const loginAction = (form) => async (dispatch) => {
   try {
@@ -17,4 +23,20 @@ export const loginAction = (form) => async (dispatch) => {
   } catch (error) {
     dispatch(requestFail(error))
   }
+}
+
+export const autoLogin = () => async (dispatch) => {
+  dispatch(requestPending())
+
+  const user = sessionStorage.getItem("user")
+
+  if (user) {
+    dispatch(loginAuto())
+    return
+  }
+}
+
+export const userLogout = () => async (dispatch) => {
+  sessionStorage.removeItem("user")
+  dispatch(logoutSuccess())
 }

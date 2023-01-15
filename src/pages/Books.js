@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react"
 import { Button, Container, Form, Row, Table } from "react-bootstrap"
+import { useSelector } from "react-redux"
 
-import { toast } from "react-toastify"
 import BooksList from "../components/books/BooksList"
 import DashboardLayout from "../components/layout/DashboardLayout"
 import { borrowBook, deleteBooks, getBooks } from "../helpers/axiosHelper"
 
 const Books = () => {
-  const [user, setUser] = useState({})
-  useEffect(() => {
-    const u = JSON.parse(sessionStorage.getItem("user"))
-    setUser(u)
-  }, [])
+  // const [user, setUser] = useState({})
+  const { userInfo } = useSelector((state) => state.user)
+  // useEffect(() => {
+  //   const u = JSON.parse(sessionStorage.getItem("user"))
+  //   setUser(u)
+  // }, [])
   const [books, setBooks] = useState([])
   // const [bookToDelete, setBookToDelete] = useState([])
 
@@ -132,7 +133,7 @@ const Books = () => {
             </tbody>
           </Table> */}
 
-          <BooksList books={books} fetchBooks={fetchAllBooks} user={user} />
+          <BooksList books={books} fetchBooks={fetchAllBooks} user={userInfo} />
           {/* {bookToDelete.length ? (
             <div className="">
               <Button variant="danger" onClick={handleOnDelete}>

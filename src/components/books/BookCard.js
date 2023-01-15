@@ -3,7 +3,7 @@ import { Button, Card } from "react-bootstrap"
 import { toast } from "react-toastify"
 import { borrowBook, deleteABook } from "../../helpers/axiosHelper"
 
-const BookCard = ({ book, fetchBooks }) => {
+const BookCard = ({ book, user, fetchBooks }) => {
   const handleBorrow = async (bookId) => {
     if (bookId) {
       await borrowBook(bookId)
@@ -39,9 +39,11 @@ const BookCard = ({ book, fetchBooks }) => {
             <Button variant="warning" onClick={() => handleBorrow(book._id)}>
               Borrow
             </Button>
-            <Button variant="danger" onClick={() => handleDelete(book._id)}>
-              Delete
-            </Button>
+            {user?.role === "teacher" && (
+              <Button variant="danger" onClick={() => handleDelete(book._id)}>
+                Delete
+              </Button>
+            )}
           </div>
         </Card.Body>
       </Card>

@@ -24,10 +24,13 @@ const userSlice = createSlice({
       sessionStorage.setItem("user", JSON.stringify(action.payload))
     },
     logoutSuccess: (state, action) => {
-      sessionStorage.removeItem("user")
       state.isLoading = false
       state.userInfo = {}
       state.error = {}
+    },
+    loginAuto: (state) => {
+      state.isLoggedIn = true
+      state.isLoading = false
     },
     registerSuccess: (state, action) => {
       state.isLoading = false
@@ -42,7 +45,12 @@ const userSlice = createSlice({
 
 const { reducer, actions } = userSlice
 
-export const { requestPending, requestFail, loginSuccess, logoutSuccess } =
-  actions
+export const {
+  requestPending,
+  requestFail,
+  loginSuccess,
+  logoutSuccess,
+  loginAuto,
+} = actions
 
 export default reducer

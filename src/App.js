@@ -53,7 +53,9 @@ function App() {
             />
             <Route
               path="profile"
-              element={isLoggedIn ? <Profile currentUser={user} /> : <Login />}
+              element={
+                isLoggedIn ? <Profile currentUser={userInfo} /> : <Login />
+              }
             />
           </Route>
         </Routes>
