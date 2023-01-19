@@ -1,12 +1,18 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap"
 import { toast } from "react-toastify"
 import DashboardLayout from "../components/layout/DashboardLayout"
-import { editUserInfo } from "../helpers/axiosHelper"
+import { editUserInfo, fetchUserDetails } from "../helpers/axiosHelper"
 
-const Profile = ({ currentUser }) => {
+const Profile = () => {
   const [showEditProfile, setShowEditProfile] = useState(false)
-  const [formData, setFormData] = useState(currentUser)
+  const [user, setUser] = useState({})
+  useEffect(() => {
+    const u = JSON.parse(sessionStorage.getItem("user"))
+    setUser(u)
+  }, [])
+
+  const [formData, setFormData] = useState(user)
 
   const handleOnChange = (e) => {
     const { name, value } = e.target
@@ -23,7 +29,8 @@ const Profile = ({ currentUser }) => {
       window.confirm("Are you sure you want to edit your profile information?")
     ) {
       const { status, message } = await editUserInfo(formData)
-      toast[status](message)
+      toast[status](message) && fetchUserDetails()
+      window.location.reload()
       setShowEditProfile(false)
     }
   }
@@ -61,6 +68,7 @@ const Profile = ({ currentUser }) => {
                     type="text"
                     value={formData?.email}
                     name="email"
+                    disabled
                     onChange={handleOnChange}
                   />
                 </Form.Group>
@@ -78,25 +86,24 @@ const Profile = ({ currentUser }) => {
               <div className="profile-left">
                 <ul>
                   <li>
-                    <strong>Profile ID:</strong> {currentUser?._id}
+                    <strong>Profile ID:</strong> {user?._id}
                   </li>
                   <li>
-                    <strong>Name:</strong>{" "}
-                    {`${currentUser?.fName} ${currentUser?.lName}`}
+                    <strong>Name:</strong> {`${user?.fName} ${user?.lName}`}
                   </li>
                   <li>
-                    <strong>Email:</strong> {currentUser?.email}
+                    <strong>Email:</strong> {user?.email}
                   </li>
                   <li>
                     <strong>Status:</strong>{" "}
                     <span
                       className={
-                        currentUser?.status === "active"
+                        user?.status === "active"
                           ? "text-success"
                           : "text-danger"
                       }
                     >
-                      {currentUser?.status}
+                      {user?.status}
                     </span>
                   </li>
                 </ul>

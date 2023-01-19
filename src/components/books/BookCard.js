@@ -8,7 +8,7 @@ const BookCard = ({ book, fetchBooks }) => {
     if (bookId) {
       await borrowBook(bookId)
         .then((response) =>
-          response?.status
+          response?.status === "success"
             ? toast.success(response.message) && fetchBooks()
             : toast.warning(response.message)
         )

@@ -75,6 +75,30 @@ export const editUserInfo = async (userData) => {
   }
 }
 
+export const fetchUserDetails = async () => {
+  try {
+    const userId = getUserFromSessionStorage()
+    if (!userId) {
+      return {
+        status: "error",
+        message: "Please login first",
+      }
+    }
+    const { data } = await axios.get(userEp, {
+      headers: {
+        Authorization: userId,
+      },
+    })
+    sessionStorage.setItem("user", JSON.stringify(data))
+    return data
+  } catch (error) {
+    return {
+      status: "error",
+      message: error.message,
+    }
+  }
+}
+
 // BOOK
 
 export const addBook = async (bookInfo) => {
