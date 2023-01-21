@@ -2,17 +2,29 @@ import React, { useEffect, useState } from "react"
 import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap"
 import { toast } from "react-toastify"
 import DashboardLayout from "../components/layout/DashboardLayout"
-import { editUserInfo, fetchUserDetails } from "../helpers/axiosHelper"
+import {
+  editUserInfo,
+  fetchUserDetails,
+  updatePassword,
+} from "../helpers/axiosHelper"
 
-const Profile = () => {
+const initialPassword = {
+  currentPassword: "",
+  password: "",
+  confirmPassword: "",
+}
+
+const Profile = ({ currentUser }) => {
   const [showEditProfile, setShowEditProfile] = useState(false)
+  const [showPassForm, setShowPassForm] = useState(false)
   const [user, setUser] = useState({})
   useEffect(() => {
     const u = JSON.parse(sessionStorage.getItem("user"))
     setUser(u)
   }, [])
 
-  const [formData, setFormData] = useState(user)
+  const [formData, setFormData] = useState(currentUser)
+  const [updatePass, setUpdatePass] = useState(initialPassword)
 
   const handleOnChange = (e) => {
     const { name, value } = e.target
@@ -24,7 +36,6 @@ const Profile = () => {
   }
   const editProfile = async (e) => {
     e.preventDefault()
-
     if (
       window.confirm("Are you sure you want to edit your profile information?")
     ) {
@@ -34,9 +45,73 @@ const Profile = () => {
       setShowEditProfile(false)
     }
   }
+
+  const handleOnPassChange = (e) => {
+    const { name, value } = e.target
+    setUpdatePass({
+      ...updatePass,
+      [name]: value,
+    })
+  }
+
+  const updateUserPass = async (e) => {
+    e.preventDefault()
+    const { currentPassword, password, confirmPassword } = updatePass
+    if (confirmPassword !== password) {
+      return toast.error("Password does not match")
+    }
+    const { status, message } = await updatePassword({
+      currentPassword,
+      password,
+    })
+    toast[status](message)
+    setShowPassForm(initialPassword)
+  }
   return (
     <>
       <DashboardLayout>
+        <Modal show={showPassForm} onHide={() => setShowPassForm(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Update Password</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="p-3">
+              <Form onSubmit={updateUserPass}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Current Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    name="currentPassword"
+                    placeholder="Enter your current password"
+                    onChange={handleOnPassChange}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>New Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    name="password"
+                    placeholder="Enter a password"
+                    onChange={handleOnPassChange}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Confirm Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Confirm your password"
+                    onChange={handleOnPassChange}
+                  />
+                </Form.Group>
+
+                <Button type="submit" variant="warning">
+                  Update Password
+                </Button>
+              </Form>
+            </div>
+          </Modal.Body>
+        </Modal>
         <Modal show={showEditProfile} onHide={() => setShowEditProfile(false)}>
           <Modal.Header closeButton>
             <Modal.Title>Edit Profile</Modal.Title>
@@ -116,7 +191,9 @@ const Profile = () => {
               >
                 Edit Details
               </Button>
-              <Button variant="dark">Change Password</Button>
+              <Button variant="dark" onClick={() => setShowPassForm(true)}>
+                Change Password
+              </Button>
             </Col>
           </Row>
         </Container>

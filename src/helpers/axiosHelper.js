@@ -75,6 +75,29 @@ export const editUserInfo = async (userData) => {
   }
 }
 
+export const updatePassword = async (passInfo) => {
+  try {
+    const userId = getUserFromSessionStorage()
+    if (!userId) {
+      return {
+        status: "error",
+        message: "Please login first",
+      }
+    }
+    const { data } = await axios.patch(userEp + "/password-update", passInfo, {
+      headers: {
+        Authorization: userId,
+      },
+    })
+    return data
+  } catch (error) {
+    return {
+      status: "error",
+      message: error.message,
+    }
+  }
+}
+
 export const fetchUserDetails = async () => {
   try {
     const userId = getUserFromSessionStorage()
