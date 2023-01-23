@@ -12,11 +12,11 @@ import Profile from "./pages/Profile"
 import { useSelector } from "react-redux"
 
 function App() {
-  const [user, setUser] = useState({})
-  useEffect(() => {
-    const u = JSON.parse(sessionStorage.getItem("user"))
-    setUser(u)
-  }, [])
+  // const [user, setUser] = useState({})
+  // useEffect(() => {
+  //   const u = JSON.parse(sessionStorage.getItem("user"))
+  //   setUser(u)
+  // }, [])
 
   const { isLoggedIn, userInfo } = useSelector((state) => state.user)
 
@@ -32,6 +32,7 @@ function App() {
           <Route path="/">
             <Route index element={isLoggedIn ? <Books /> : <Login />} />
             <Route path="register" element={<Register />} />
+            <Route path="login" element={<Login />} />
 
             <Route path="books">
               <Route index element={<Books />} />
@@ -44,7 +45,7 @@ function App() {
             <Route
               exact
               path="mybooks"
-              element={isLoggedIn ? <MyBooks user={user} /> : <Login />}
+              element={isLoggedIn ? <MyBooks /> : <Login />}
             ></Route>
 
             <Route
@@ -53,9 +54,7 @@ function App() {
             />
             <Route
               path="profile"
-              element={
-                isLoggedIn ? <Profile currentUser={userInfo} /> : <Login />
-              }
+              element={isLoggedIn ? <Profile /> : <Login />}
             />
           </Route>
         </Routes>

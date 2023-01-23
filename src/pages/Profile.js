@@ -1,12 +1,14 @@
 import React, { useState } from "react"
 import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap"
+import { useSelector } from "react-redux"
 import { toast } from "react-toastify"
 import DashboardLayout from "../components/layout/DashboardLayout"
 import { editUserInfo } from "../helpers/axiosHelper"
 
-const Profile = ({ currentUser }) => {
+const Profile = () => {
   const [showEditProfile, setShowEditProfile] = useState(false)
-  const [formData, setFormData] = useState(currentUser)
+  const { userInfo } = useSelector((state) => state.user)
+  const [formData, setFormData] = useState(userInfo)
 
   const handleOnChange = (e) => {
     const { name, value } = e.target
@@ -78,25 +80,25 @@ const Profile = ({ currentUser }) => {
               <div className="profile-left">
                 <ul>
                   <li>
-                    <strong>Profile ID:</strong> {currentUser?._id}
+                    <strong>Profile ID:</strong> {userInfo?._id}
                   </li>
                   <li>
                     <strong>Name:</strong>{" "}
-                    {`${currentUser?.fName} ${currentUser?.lName}`}
+                    {`${userInfo?.fName} ${userInfo?.lName}`}
                   </li>
                   <li>
-                    <strong>Email:</strong> {currentUser?.email}
+                    <strong>Email:</strong> {userInfo?.email}
                   </li>
                   <li>
                     <strong>Status:</strong>{" "}
                     <span
                       className={
-                        currentUser?.status === "active"
+                        userInfo?.status === "active"
                           ? "text-success"
                           : "text-danger"
                       }
                     >
-                      {currentUser?.status}
+                      {userInfo?.status}
                     </span>
                   </li>
                 </ul>

@@ -1,23 +1,16 @@
-import { useEffect, useState } from "react"
 import { Container, Nav, Navbar } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { userLogout } from "../../redux/User/UserAction"
 
 const Header = () => {
-  // const [user, setUser] = useState({})
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { userInfo } = useSelector((state) => state.user)
 
-  // useEffect(() => {
-  //   const u = JSON.parse(sessionStorage.getItem("user"))
-  //   setUser(u)
-  // }, [])
-
   const handleLogout = () => {
     dispatch(userLogout())
-    navigate("/")
+    navigate("/login")
   }
 
   return (

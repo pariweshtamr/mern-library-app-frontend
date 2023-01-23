@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit"
 
 const initialState = {
   isLoading: false,
-  isLoggedIn: false,
+  isLoggedIn: sessionStorage.getItem("user") ? true : false,
   error: {},
   userInfo: sessionStorage.getItem("user")
     ? JSON.parse(sessionStorage.getItem("user"))
@@ -23,10 +23,11 @@ const userSlice = createSlice({
       state.isLoggedIn = true
       sessionStorage.setItem("user", JSON.stringify(action.payload))
     },
-    logoutSuccess: (state, action) => {
+    logoutSuccess: (state) => {
       state.isLoading = false
       state.userInfo = {}
       state.error = {}
+      sessionStorage.removeItem("user")
     },
     loginAuto: (state) => {
       state.isLoggedIn = true
@@ -48,6 +49,7 @@ const { reducer, actions } = userSlice
 export const {
   requestPending,
   requestFail,
+  registerSuccess,
   loginSuccess,
   logoutSuccess,
   loginAuto,

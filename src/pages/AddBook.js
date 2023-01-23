@@ -2,12 +2,13 @@ import { useState } from "react"
 import { Button, Col, Form, Spinner } from "react-bootstrap"
 import TeacherDashboardLayout from "../components/layout/DashboardLayout"
 import bookImg from "../assets/book.jpg"
-import { addBook } from "../helpers/axiosHelper"
-import { toast } from "react-toastify"
+import { useDispatch, useSelector } from "react-redux"
+import { addBookAction } from "../redux/Book/BookAction"
 
 const AddBook = () => {
+  const dispatch = useDispatch()
+  const { isLoading } = useSelector((state) => state.book)
   const [form, setForm] = useState({})
-  const [loading, setLoading] = useState(false)
 
   const handleOnChange = (e) => {
     const { name, value } = e.target
@@ -17,10 +18,8 @@ const AddBook = () => {
 
   const handleOnSubmit = async (e) => {
     e.preventDefault()
-    setLoading(true)
-    const { status, message } = await addBook(form)
-    status === "success" ? toast[status](message) : toast[status](message)
-    setLoading(false)
+    dispatch(addBookAction(form)) &&
+      setForm({ title: "", author: "", isbn: "", year: "", thumbnail: "" })
   }
 
   return (
@@ -99,7 +98,9 @@ const AddBook = () => {
               <Button variant="warning" type="submit" className="mt-4">
                 ADD BOOK{" "}
                 <span>
-                  {loading && <Spinner animation="border" variant="warning" />}
+                  {isLoading && (
+                    <Spinner animation="border" variant="warning" />
+                  )}
                 </span>
               </Button>
             </Form>
