@@ -12,11 +12,26 @@ const transactionEp = baseApiUrl + "/transaction"
 
 // get user from sessionStorage
 
-export const getUser = () => {
-  const user = JSON.parse(sessionStorage.getItem("user"))
-
-  if (user) {
-    return user
+export const getUser = async () => {
+  try {
+    const userId = getUserFromSessionStorage()
+    if (!userId) {
+      return {
+        status: "error",
+        message: "Please login first",
+      }
+    }
+    const { data } = await axios.get(userEp, {
+      headers: {
+        Authorization: userId,
+      },
+    })
+    return data
+  } catch (error) {
+    return {
+      status: "error",
+      message: error.message,
+    }
   }
 }
 
@@ -62,6 +77,30 @@ export const editUserInfo = async (userData) => {
       }
     }
     const { data } = await axios.patch(userEp, userData, {
+      headers: {
+        Authorization: userId,
+      },
+    })
+    return data
+  } catch (error) {
+    return {
+      status: "error",
+      message: error.message,
+    }
+  }
+}
+
+export const passUpdate = async (userData) => {
+  try {
+    const userId = getUserFromSessionStorage()
+    if (!userId) {
+      return {
+        status: "error",
+        message: "Please login first",
+      }
+    }
+
+    const { data } = await axios.patch(userEp + "/password-update", userData, {
       headers: {
         Authorization: userId,
       },

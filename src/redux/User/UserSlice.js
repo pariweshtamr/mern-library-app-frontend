@@ -7,6 +7,7 @@ const initialState = {
   userInfo: sessionStorage.getItem("user")
     ? JSON.parse(sessionStorage.getItem("user"))
     : {},
+  response: {},
 }
 
 const userSlice = createSlice({
@@ -15,6 +16,11 @@ const userSlice = createSlice({
   reducers: {
     requestPending: (state) => {
       state.isLoading = true
+    },
+    getUserSuccess: (state, { payload }) => {
+      state.isLoading = false
+      state.userInfo = payload
+      sessionStorage.setItem("user", JSON.stringify(payload))
     },
     loginSuccess: (state, action) => {
       state.isLoading = false
@@ -25,6 +31,7 @@ const userSlice = createSlice({
     },
     logoutSuccess: (state) => {
       state.isLoading = false
+      state.isLoggedIn = false
       state.userInfo = {}
       state.error = {}
       sessionStorage.removeItem("user")
@@ -41,6 +48,11 @@ const userSlice = createSlice({
       state.isLoading = false
       state.error = action.payload
     },
+    requestSuccess: (state, { payload }) => {
+      state.isLoading = false
+      state.response = payload
+      state.error = {}
+    },
   },
 })
 
@@ -53,6 +65,8 @@ export const {
   loginSuccess,
   logoutSuccess,
   loginAuto,
+  requestSuccess,
+  getUserSuccess,
 } = actions
 
 export default reducer

@@ -1,33 +1,25 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { getAllTransactions } from "../../helpers/axiosHelper"
+import {
+  getTransactionsSuccess,
+  requestFailed,
+  requestPending,
+} from "./TransactionSlice"
 
-const initialState = {
-  isLoading: false,
-  error: {},
-  response: {},
-  transactions: [],
+export const getTransactionsAction = () => async (dispatch) => {
+  try {
+    dispatch(requestPending())
+
+    const transactions = await getAllTransactions()
+
+    transactions
+      ? dispatch(getTransactionsSuccess(transactions))
+      : dispatch(
+          requestFailed({
+            status: "error",
+            message: "Unable to get transactions!",
+          })
+        )
+  } catch (error) {
+    dispatch(requestFailed(error))
+  }
 }
-
-const transactionSlice = createSlice({
-  name: "transaction",
-  initialState,
-  reducers: {
-    requestPending: (state) => {
-      state.isLoading = true
-    },
-    getTransactionsSuccess: (state, { payload }) => {
-      state.isLoading = false
-      state.transactions = payload
-      state.error = {}
-    },
-    requestFailed: (state, { payload }) => {
-      state.isLoading = false
-      state.error = payload
-    },
-  },
-})
-
-const { actions, reducer } = transactionSlice
-
-export const { requestPending, getTransactionsSuccess, requestFailed } = actions
-
-export default reducer

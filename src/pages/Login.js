@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { Button, Col, Container, Form, Row, Spinner } from "react-bootstrap"
 import InputField from "../components/inputField/InputField"
 import { useEffect, useState } from "react"
-import { loginUser } from "../helpers/axiosHelper"
-import { toast } from "react-toastify"
+
 import { useDispatch, useSelector } from "react-redux"
 import { loginAction } from "../redux/User/UserAction"
 
@@ -20,7 +19,6 @@ const Login = () => {
 
   const handleOnChange = (e) => {
     const { name, value } = e.target
-
     setForm({
       ...form,
       [name]: value,
@@ -71,7 +69,7 @@ const Login = () => {
                   <InputField key={i} {...input} onChange={handleOnChange} />
                 ))}
 
-                <p className="d-grid">
+                <p className="d-flex">
                   <Button
                     variant="warning"
                     type="submit"

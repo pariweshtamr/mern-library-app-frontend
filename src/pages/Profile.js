@@ -1,18 +1,37 @@
 import React, { useState } from "react"
-import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap"
-import { useSelector } from "react-redux"
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  Modal,
+  Row,
+  Spinner,
+} from "react-bootstrap"
+import { useDispatch, useSelector } from "react-redux"
 import { toast } from "react-toastify"
 import DashboardLayout from "../components/layout/DashboardLayout"
-import { editUserInfo } from "../helpers/axiosHelper"
+import {
+  editProfileAction,
+  updatePasswordAction,
+} from "../redux/User/UserAction"
+
+const initialState = {
+  currentPassword: "",
+  password: "",
+  confirmPassword: "",
+}
 
 const Profile = () => {
+  const dispatch = useDispatch()
+  const { isLoading, userInfo } = useSelector((state) => state.user)
   const [showEditProfile, setShowEditProfile] = useState(false)
-  const { userInfo } = useSelector((state) => state.user)
+  const [showPassForm, setShowPassForm] = useState(false)
   const [formData, setFormData] = useState(userInfo)
+  const [passFormData, setPassFormData] = useState(initialState)
 
   const handleOnChange = (e) => {
     const { name, value } = e.target
-
     setFormData({
       ...formData,
       [name]: value,
@@ -24,14 +43,75 @@ const Profile = () => {
     if (
       window.confirm("Are you sure you want to edit your profile information?")
     ) {
-      const { status, message } = await editUserInfo(formData)
-      toast[status](message)
+      dispatch(editProfileAction(formData))
       setShowEditProfile(false)
     }
+  }
+
+  const handleOnPassChange = (e) => {
+    const { name, value } = e.target
+    setPassFormData({
+      ...passFormData,
+      [name]: value,
+    })
+  }
+  const handleOnPassFormSubmit = (e) => {
+    e.preventDefault()
+    const { currentPassword, password, confirmPassword } = passFormData
+    if (confirmPassword !== password) {
+      return toast.error("Confirm password and password do not match!")
+    }
+    dispatch(updatePasswordAction({ currentPassword, password }))
+    setPassFormData({ currentPassword: "", password: "", confirmPassword: "" })
   }
   return (
     <>
       <DashboardLayout>
+        <Modal show={showPassForm} onHide={() => setShowPassForm(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Update Password</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="p-3">
+              <Form onSubmit={handleOnPassFormSubmit}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Current Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    name="currentPassword"
+                    placeholder="Enter your current password"
+                    value={passFormData.currentPassword}
+                    onChange={handleOnPassChange}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>New Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    name="password"
+                    placeholder="Enter a new password"
+                    value={passFormData.password}
+                    onChange={handleOnPassChange}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Confirm Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Re-enter your new password"
+                    value={passFormData.confirmPassword}
+                    onChange={handleOnPassChange}
+                  />
+                </Form.Group>
+                <Button variant="warning" type="submit">
+                  Update Password{" "}
+                  <span>{isLoading && <Spinner animation="border" />}</span>
+                </Button>
+              </Form>
+            </div>
+          </Modal.Body>
+        </Modal>
         <Modal show={showEditProfile} onHide={() => setShowEditProfile(false)}>
           <Modal.Header closeButton>
             <Modal.Title>Edit Profile</Modal.Title>
@@ -111,7 +191,10 @@ const Profile = () => {
               >
                 Edit Details
               </Button>
-              <Button variant="dark">Change Password</Button>
+              <Button onClick={() => setShowPassForm(true)} variant="dark">
+                Change Password{" "}
+                <span>{isLoading && <Spinner animation="border" />}</span>
+              </Button>
             </Col>
           </Row>
         </Container>
