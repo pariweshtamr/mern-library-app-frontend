@@ -2,7 +2,7 @@ import axios from "axios"
 const baseApiUrl =
   process.env.NODE_ENV === "production"
     ? "/api/v1"
-    : process.env.REACT_APP_ROOT_URL
+    : "http://localhost:8000/api/v1"
 
 const userEp = baseApiUrl + "/user"
 const bookEp = baseApiUrl + "/book"
