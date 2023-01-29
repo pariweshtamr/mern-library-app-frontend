@@ -3,9 +3,11 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap"
 import InputField from "../components/inputField/InputField"
 import DefaultLayout from "../components/layout/DefaultLayout"
 import { toast } from "react-toastify"
-import { postNewUser } from "../helpers/axiosHelper"
+import { useDispatch } from "react-redux"
+import { registerAction } from "../redux/User/UserAction"
 
 const Register = () => {
+  const dispatch = useDispatch()
   const [form, setForm] = useState({})
 
   const handleOnChange = (e) => {
@@ -24,8 +26,8 @@ const Register = () => {
     if (confirmPassword !== rest.password) {
       return toast.error("Password does not match")
     }
-    const { status, message } = await postNewUser(rest)
-    toast[status](message)
+
+    dispatch(registerAction(rest))
   }
   const inputs = [
     {

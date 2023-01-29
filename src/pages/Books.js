@@ -1,28 +1,19 @@
-import React, { useEffect, useState } from "react"
-import { Button, Container, Form, Row, Table } from "react-bootstrap"
+import React, { useEffect } from "react"
+import { Container, Row, Spinner } from "react-bootstrap"
+import { useDispatch, useSelector } from "react-redux"
 
-import { toast } from "react-toastify"
 import BooksList from "../components/books/BooksList"
 import DashboardLayout from "../components/layout/DashboardLayout"
-import { borrowBook, deleteBooks, getBooks } from "../helpers/axiosHelper"
+import { getBooksAction } from "../redux/Book/BookAction"
 
 const Books = () => {
-  const [user, setUser] = useState({})
-  useEffect(() => {
-    const u = JSON.parse(sessionStorage.getItem("user"))
-    setUser(u)
-  }, [])
-  const [books, setBooks] = useState([])
-  // const [bookToDelete, setBookToDelete] = useState([])
-
-  const fetchAllBooks = async () => {
-    const res = await getBooks()
-    setBooks(res.books)
-  }
+  const dispatch = useDispatch()
+  const { isLoading, books } = useSelector((state) => state.book)
+  const { userInfo } = useSelector((state) => state.user)
 
   useEffect(() => {
-    fetchAllBooks()
-  }, [])
+    dispatch(getBooksAction())
+  }, [dispatch])
 
   // const handleOnSelect = (e) => {
   //   const { checked, value } = e.target
@@ -49,27 +40,27 @@ const Books = () => {
   //   }
   // }
 
-  const onSearch = (e) => {
-    const { value } = e.target
+  // const onSearch = (e) => {
+  //   const { value } = e.target
 
-    const newArray = books?.filter((b) =>
-      b.title.toLowerCase().includes(value.toLowerCase())
-    )
-    value !== "" ? setBooks(newArray) : fetchAllBooks()
-  }
+  //   const newArray = books?.filter((b) =>
+  //     b.title.toLowerCase().includes(value.toLowerCase())
+  //   )
+  //   value !== "" ? setBooks(newArray) : fetchAllBooks()
+  // }
 
   return (
     <DashboardLayout>
       <Container>
         <Row className="p-5">
-          <div className="mb-4 mx-auto" style={{ width: "40%" }}>
+          {/* <div className="mb-4 mx-auto" style={{ width: "40%" }}>
             <Form.Control
               type="search"
               name="search"
               placeholder="Search book title..."
               onChange={onSearch}
             />
-          </div>
+          </div> */}
           {/* <Table striped bordered hover>
             <thead>
               <tr className="text-center">
@@ -131,8 +122,8 @@ const Books = () => {
               ))}
             </tbody>
           </Table> */}
-
-          <BooksList books={books} fetchBooks={fetchAllBooks} user={user} />
+          {isLoading && <Spinner animation="border" />}
+          <BooksList books={books} user={userInfo} />
           {/* {bookToDelete.length ? (
             <div className="">
               <Button variant="danger" onClick={handleOnDelete}>

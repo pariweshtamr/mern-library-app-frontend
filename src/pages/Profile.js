@@ -1,34 +1,37 @@
-import React, { useEffect, useState } from "react"
-import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap"
+import React, { useState } from "react"
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  Modal,
+  Row,
+  Spinner,
+} from "react-bootstrap"
+import { useDispatch, useSelector } from "react-redux"
 import { toast } from "react-toastify"
 import DashboardLayout from "../components/layout/DashboardLayout"
 import {
-  editUserInfo,
-  fetchUserDetails,
-  updatePassword,
-} from "../helpers/axiosHelper"
+  editProfileAction,
+  updatePasswordAction,
+} from "../redux/User/UserAction"
 
-const initialPassword = {
+const initialState = {
   currentPassword: "",
   password: "",
   confirmPassword: "",
 }
 
-const Profile = ({ currentUser }) => {
+const Profile = () => {
+  const dispatch = useDispatch()
+  const { isLoading, userInfo } = useSelector((state) => state.user)
   const [showEditProfile, setShowEditProfile] = useState(false)
   const [showPassForm, setShowPassForm] = useState(false)
-  const [user, setUser] = useState({})
-  useEffect(() => {
-    const u = JSON.parse(sessionStorage.getItem("user"))
-    setUser(u)
-  }, [])
-
-  const [formData, setFormData] = useState(currentUser)
-  const [updatePass, setUpdatePass] = useState(initialPassword)
+  const [formData, setFormData] = useState(userInfo)
+  const [passFormData, setPassFormData] = useState(initialState)
 
   const handleOnChange = (e) => {
     const { name, value } = e.target
-
     setFormData({
       ...formData,
       [name]: value,
@@ -39,33 +42,26 @@ const Profile = ({ currentUser }) => {
     if (
       window.confirm("Are you sure you want to edit your profile information?")
     ) {
-      const { status, message } = await editUserInfo(formData)
-      toast[status](message) && fetchUserDetails()
-      window.location.reload()
+      dispatch(editProfileAction(formData))
       setShowEditProfile(false)
     }
   }
 
   const handleOnPassChange = (e) => {
     const { name, value } = e.target
-    setUpdatePass({
-      ...updatePass,
+    setPassFormData({
+      ...passFormData,
       [name]: value,
     })
   }
-
-  const updateUserPass = async (e) => {
+  const handleOnPassFormSubmit = (e) => {
     e.preventDefault()
-    const { currentPassword, password, confirmPassword } = updatePass
+    const { currentPassword, password, confirmPassword } = passFormData
     if (confirmPassword !== password) {
-      return toast.error("Password does not match")
+      return toast.error("Confirm password and password do not match!")
     }
-    const { status, message } = await updatePassword({
-      currentPassword,
-      password,
-    })
-    toast[status](message)
-    setShowPassForm(initialPassword)
+    dispatch(updatePasswordAction({ currentPassword, password }))
+    setPassFormData({ currentPassword: "", password: "", confirmPassword: "" })
   }
   return (
     <>
@@ -76,13 +72,14 @@ const Profile = ({ currentUser }) => {
           </Modal.Header>
           <Modal.Body>
             <div className="p-3">
-              <Form onSubmit={updateUserPass}>
+              <Form onSubmit={handleOnPassFormSubmit}>
                 <Form.Group className="mb-3">
                   <Form.Label>Current Password</Form.Label>
                   <Form.Control
                     type="password"
                     name="currentPassword"
                     placeholder="Enter your current password"
+                    value={passFormData.currentPassword}
                     onChange={handleOnPassChange}
                   />
                 </Form.Group>
@@ -91,7 +88,8 @@ const Profile = ({ currentUser }) => {
                   <Form.Control
                     type="password"
                     name="password"
-                    placeholder="Enter a password"
+                    placeholder="Enter a new password"
+                    value={passFormData.password}
                     onChange={handleOnPassChange}
                   />
                 </Form.Group>
@@ -100,13 +98,14 @@ const Profile = ({ currentUser }) => {
                   <Form.Control
                     type="password"
                     name="confirmPassword"
-                    placeholder="Confirm your password"
+                    placeholder="Re-enter your new password"
+                    value={passFormData.confirmPassword}
                     onChange={handleOnPassChange}
                   />
                 </Form.Group>
-
-                <Button type="submit" variant="warning">
-                  Update Password
+                <Button variant="warning" type="submit">
+                  Update Password{" "}
+                  <span>{isLoading && <Spinner animation="border" />}</span>
                 </Button>
               </Form>
             </div>
@@ -161,24 +160,25 @@ const Profile = ({ currentUser }) => {
               <div className="profile-left">
                 <ul>
                   <li>
-                    <strong>Profile ID:</strong> {user?._id}
+                    <strong>Profile ID:</strong> {userInfo?._id}
                   </li>
                   <li>
-                    <strong>Name:</strong> {`${user?.fName} ${user?.lName}`}
+                    <strong>Name:</strong>{" "}
+                    {`${userInfo?.fName} ${userInfo?.lName}`}
                   </li>
                   <li>
-                    <strong>Email:</strong> {user?.email}
+                    <strong>Email:</strong> {userInfo?.email}
                   </li>
                   <li>
                     <strong>Status:</strong>{" "}
                     <span
                       className={
-                        user?.status === "active"
+                        userInfo?.status === "active"
                           ? "text-success"
                           : "text-danger"
                       }
                     >
-                      {user?.status}
+                      {userInfo?.status}
                     </span>
                   </li>
                 </ul>
@@ -191,8 +191,9 @@ const Profile = ({ currentUser }) => {
               >
                 Edit Details
               </Button>
-              <Button variant="dark" onClick={() => setShowPassForm(true)}>
-                Change Password
+              <Button onClick={() => setShowPassForm(true)} variant="dark">
+                Change Password{" "}
+                <span>{isLoading && <Spinner animation="border" />}</span>
               </Button>
             </Col>
           </Row>

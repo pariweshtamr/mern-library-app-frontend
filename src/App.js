@@ -9,13 +9,17 @@ import MyBooks from "./pages/MyBooks"
 import Transactions from "./pages/Transactions"
 import Books from "./pages/Books"
 import Profile from "./pages/Profile"
+import { useSelector } from "react-redux"
 
 function App() {
-  const [user, setUser] = useState({})
-  useEffect(() => {
-    const u = JSON.parse(sessionStorage.getItem("user"))
-    setUser(u)
-  }, [])
+  // const [user, setUser] = useState({})
+  // useEffect(() => {
+  //   const u = JSON.parse(sessionStorage.getItem("user"))
+  //   setUser(u)
+  // }, [])
+
+  const { isLoggedIn, userInfo } = useSelector((state) => state.user)
+
   // const RequireAuth = ({ children }) => {
   //   return user?._id ? children : <Navigate to="/" />
   // }
@@ -26,22 +30,32 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/">
-            <Route index element={<Login />} />
+            <Route index element={isLoggedIn ? <Books /> : <Login />} />
             <Route path="register" element={<Register />} />
+            <Route path="login" element={<Login />} />
 
             <Route path="books">
               <Route index element={<Books />} />
-              <Route path="add" element={<AddBook user={user} />}></Route>
+              <Route
+                path="add"
+                element={isLoggedIn ? <AddBook /> : <Login />}
+              ></Route>
             </Route>
 
             <Route
               exact
               path="mybooks"
-              element={<MyBooks user={user} />}
+              element={isLoggedIn ? <MyBooks /> : <Login />}
             ></Route>
 
-            <Route path="transactions" element={<Transactions />} />
-            <Route path="profile" element={<Profile currentUser={user} />} />
+            <Route
+              path="transactions"
+              element={isLoggedIn ? <Transactions /> : <Login />}
+            />
+            <Route
+              path="profile"
+              element={isLoggedIn ? <Profile /> : <Login />}
+            />
           </Route>
         </Routes>
       </BrowserRouter>

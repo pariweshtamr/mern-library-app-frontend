@@ -1,18 +1,24 @@
 import DefaultLayout from "../components/layout/DefaultLayout"
 import { useNavigate } from "react-router-dom"
-import { Button, Col, Container, Form, Row } from "react-bootstrap"
+import { Button, Col, Container, Form, Row, Spinner } from "react-bootstrap"
 import InputField from "../components/inputField/InputField"
-import { useState } from "react"
-import { loginUser } from "../helpers/axiosHelper"
-import { toast } from "react-toastify"
+import { useEffect, useState } from "react"
+
+import { useDispatch, useSelector } from "react-redux"
+import { loginAction } from "../redux/User/UserAction"
 
 const Login = () => {
   const [form, setForm] = useState({})
+  const dispatch = useDispatch()
   const navigate = useNavigate()
+  const { isLoggedIn, isLoading } = useSelector((state) => state.user)
+
+  useEffect(() => {
+    isLoggedIn && navigate("/")
+  }, [isLoggedIn, navigate])
 
   const handleOnChange = (e) => {
     const { name, value } = e.target
-
     setForm({
       ...form,
       [name]: value,
@@ -21,16 +27,16 @@ const Login = () => {
 
   const handleOnSubmit = async (e) => {
     e.preventDefault()
+    dispatch(loginAction(form))
+    // const { status, message, user } = await loginUser(form)
 
-    const { status, message, user } = await loginUser(form)
-
-    if (status === "success") {
-      toast[status](message)
-      sessionStorage.setItem("user", JSON.stringify(user))
-      navigate("/books")
-    } else {
-      toast[status](message)
-    }
+    // if (status === "success") {
+    //   toast[status](message)
+    //   sessionStorage.setItem("user", JSON.stringify(user))
+    //   navigate("/books")
+    // } else {
+    //   toast[status](message)
+    // }
   }
 
   const inputs = [
@@ -63,9 +69,14 @@ const Login = () => {
                   <InputField key={i} {...input} onChange={handleOnChange} />
                 ))}
 
-                <p className="d-grid">
-                  <Button variant="warning" type="submit">
+                <p className="d-flex">
+                  <Button
+                    variant="warning"
+                    type="submit"
+                    className="d-flex gap-3 align-items-center"
+                  >
                     Login
+                    <span>{isLoading && <Spinner variant="border" />}</span>
                   </Button>
                 </p>
               </Form>

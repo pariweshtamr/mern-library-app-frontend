@@ -1,27 +1,22 @@
 import React from "react"
 import { Button, Card } from "react-bootstrap"
-import { toast } from "react-toastify"
-import { borrowBook, deleteABook } from "../../helpers/axiosHelper"
+import { useDispatch, useSelector } from "react-redux"
+import { borrowBookAction, deleteBookAction } from "../../redux/Book/BookAction"
 
-const BookCard = ({ book, fetchBooks }) => {
+const BookCard = ({ book }) => {
+  const dispatch = useDispatch()
+  const { userInfo } = useSelector((state) => state.user)
+
   const handleBorrow = async (bookId) => {
     if (bookId) {
-      await borrowBook(bookId)
-        .then((response) =>
-          response?.status === "success"
-            ? toast.success(response.message) && fetchBooks()
-            : toast.warning(response.message)
-        )
-        .catch((err) => console.log(err))
+      dispatch(borrowBookAction(bookId))
     }
   }
 
   const handleDelete = async (bookId) => {
     if (window.confirm("Are you sure you want to delete this book?")) {
       if (bookId) {
-        const { status, message } = await deleteABook(bookId)
-
-        toast[status](message) && fetchBooks()
+        dispatch(deleteBookAction(bookId))
       }
     }
   }
@@ -39,9 +34,11 @@ const BookCard = ({ book, fetchBooks }) => {
             <Button variant="warning" onClick={() => handleBorrow(book._id)}>
               Borrow
             </Button>
-            <Button variant="danger" onClick={() => handleDelete(book._id)}>
-              Delete
-            </Button>
+            {userInfo?.role === "teacher" && (
+              <Button variant="danger" onClick={() => handleDelete(book._id)}>
+                Delete
+              </Button>
+            )}
           </div>
         </Card.Body>
       </Card>
